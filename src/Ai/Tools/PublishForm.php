@@ -26,8 +26,8 @@ class PublishForm implements Tool
             return "Error: Form with ID {$request['form_id']} not found.";
         }
 
-        $publicUrl = url(str_replace('{slug}', $form->slug, config('forms.urls.public', '/f/{slug}')));
-        $editUrl   = url(str_replace('{id}', $form->id, config('forms.urls.edit', '/forms/{id}/edit')));
+        $publicUrl = route('forms.public', $form->slug);
+        $editUrl   = route('forms.edit', $form);
 
         if ($form->status === 'published') {
             return "Form \"{$form->title}\" is already published.\nPublic URL: {$publicUrl}";

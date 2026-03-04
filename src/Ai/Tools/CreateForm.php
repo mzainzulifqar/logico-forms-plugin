@@ -174,7 +174,7 @@ class CreateForm implements Tool
             }
 
             // Build output
-            $editUrl = url(str_replace('{id}', $form->id, config('forms.urls.edit', '/forms/{id}/edit')));
+            $editUrl = route('forms.edit', $form);
             $output = "Form created: \"{$form->title}\" (ID: {$form->id})\n";
             $output .= "Questions: " . count($questions) . ", Logic rules: {$logicCount}\n";
             $output .= "Edit URL: {$editUrl}\n";
