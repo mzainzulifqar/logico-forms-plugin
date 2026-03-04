@@ -12,8 +12,6 @@ Route::get('/f/{slug}/og-image.png', [FormController::class, 'ogImage'])->name('
 
 // ── Authenticated Form Management ──────────────────────────────
 Route::middleware(config('forms.auth_middleware', ['web', 'auth']))->group(function () {
-    Route::get('/dashboard', [FormController::class, 'index'])->name('dashboard');
-
     // AI Builder
     Route::get('/forms/ai-builder', [AiFormBuilderController::class, 'index'])->name('forms.ai-builder');
     Route::post('/forms/ai-builder/chat', [AiFormBuilderController::class, 'chat'])->middleware('throttle:10,1')->name('forms.ai-builder.chat');

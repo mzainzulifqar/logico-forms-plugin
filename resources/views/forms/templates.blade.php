@@ -26,7 +26,7 @@
     <div class="max-w-[1400px] mx-auto px-8 py-8">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <a href="{{ route('dashboard') }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm hover:bg-slate-50 transition-all shrink-0" title="Back to dashboard">
+                <a href="{{ route('forms.index') }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm hover:bg-slate-50 transition-all shrink-0" title="Back to dashboard">
                     <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
                 </a>
                 <div>
