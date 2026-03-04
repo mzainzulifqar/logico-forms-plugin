@@ -22,6 +22,16 @@ php artisan vendor:publish --tag=forms-config
 php artisan migrate
 ```
 
+The package depends on `laravel/ai` for the AI builder. Its migrations are included automatically — just run `php artisan migrate` and both the forms tables and the `agent_conversations` table will be created.
+
+If you're installing the package into an app that already has the forms tables (e.g. migrated from a monolith), you can skip the duplicate migrations:
+
+```bash
+# Mark package migrations as already ran without re-creating tables
+php artisan migrate --pretend  # check what would run
+# Then manually insert into the migrations table if needed
+```
+
 ### Local path install (development)
 
 Add the path repository to your app's `composer.json`:
@@ -41,6 +51,47 @@ Add the path repository to your app's `composer.json`:
 ```
 
 Then run `composer update logicoforms/laravel-forms`.
+
+## Environment Variables
+
+Add these to your `.env` file. All are optional — sensible defaults are used when omitted.
+
+```env
+# ── General ──────────────────────────────────────────────────────
+FORMS_OWNER_MODEL="App\Models\User"          # Model that owns forms
+FORMS_API_PREFIX=api                          # Prefix for public API routes
+FORMS_API_RATE_LIMIT=60,1                     # API throttle (requests,minutes)
+
+# ── URLs ─────────────────────────────────────────────────────────
+FORMS_URL_EDIT=/forms/{id}/edit               # Edit URL pattern (used by AI builder)
+FORMS_URL_PUBLIC=/f/{slug}                    # Public form URL pattern
+
+# ── Branding ─────────────────────────────────────────────────────
+FORMS_BRAND_NAME="My App"                     # Shown in nav & OG images
+FORMS_BRAND_DOMAIN=myapp.com                  # Shown in OG images
+FORMS_BRAND_TAGLINE="Smart forms for everyone"
+FORMS_BRAND_LOGO_URL=/logo.svg                # Logo URL for nav
+
+# ── AI Provider Keys (required for AI builder) ──────────────────
+OPENAI_API_KEY=                               # Required if using OpenAI
+ANTHROPIC_API_KEY=                            # Required if using Anthropic
+
+# ── AI Builder ───────────────────────────────────────────────────
+FORMS_AI_BUILDER_PROVIDER=                    # e.g. openai, anthropic (auto-detected if blank)
+FORMS_AI_BUILDER_MODEL=gpt-5.2               # Model for form generation
+FORMS_AI_BUILDER_TIMEOUT=120                  # Max seconds per AI request
+FORMS_AI_BUILDER_ENFORCE_QUALITY=true         # Reject lazy branching patterns
+
+# ── AI Critic (optional quality reviewer) ────────────────────────
+FORMS_AI_CRITIC_ENABLED=true                  # Enable AI quality review
+FORMS_AI_CRITIC_MODE=on_pass                  # When to run critic
+FORMS_AI_CRITIC_PROVIDER=                     # Provider (defaults to builder provider)
+FORMS_AI_CRITIC_MODEL=gpt-4o                  # Critic model
+FORMS_AI_CRITIC_TIMEOUT=25                    # Critic timeout in seconds
+FORMS_AI_CRITIC_MAX_ATTEMPTS=2                # Max retry attempts
+```
+
+> **Note:** The AI builder requires the `laravel/ai` package. Make sure you also configure your AI provider's API key in `laravel/ai`'s config (e.g. `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`).
 
 ## Setup
 
