@@ -1,0 +1,25 @@
+{
+    "name": "logicoforms/laravel-forms",
+    "description": "A Typeform-like forms system for Laravel with logic branching and AI builder.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Logicoforms\\Forms\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "laravel/ai": "^0.1.2"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Logicoforms\\Forms\\FormsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
