@@ -22,14 +22,10 @@ php artisan vendor:publish --tag=forms-config
 php artisan migrate
 ```
 
-The package depends on `laravel/ai` for the AI builder. Its migrations are included automatically — just run `php artisan migrate` and both the forms tables and the `agent_conversations` table will be created.
-
-If you're installing the package into an app that already has the forms tables (e.g. migrated from a monolith), you can skip the duplicate migrations:
+If the `laravel/ai` migration doesn't run automatically, run it manually:
 
 ```bash
-# Mark package migrations as already ran without re-creating tables
-php artisan migrate --pretend  # check what would run
-# Then manually insert into the migrations table if needed
+php artisan migrate --path=vendor/laravel/ai/database/migrations
 ```
 
 ### Local path install (development)
@@ -63,7 +59,7 @@ FORMS_API_PREFIX=api                          # Prefix for public API routes
 FORMS_API_RATE_LIMIT=60,1                     # API throttle (requests,minutes)
 
 # ── URLs ─────────────────────────────────────────────────────────
-FORMS_URL_EDIT=/forms/{id}/edit               # Edit URL pattern (used by AI builder)
+FORMS_URL_EDIT=/logico/forms/{id}/edit         # Edit URL pattern (used by AI builder)
 FORMS_URL_PUBLIC=/f/{slug}                    # Public form URL pattern
 
 # ── Branding ─────────────────────────────────────────────────────

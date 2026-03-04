@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <link rel="icon" type="image/svg+xml" href="{{ asset(config('forms.brand.logo_url', '/logo.svg')) }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Form Builder — Logicoforms</title>
     @vite(['resources/css/app.css'])
@@ -103,11 +103,11 @@
     <header class="flex-shrink-0 bg-white border-b border-gray-200 shadow-sm px-4 sm:px-6 py-3">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3 sm:gap-4">
-                <a href="/forms" class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+                <a href="{{ route('forms.index') }}" class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
                 </a>
                 <div class="flex items-center gap-3">
-                    <img src="{{ asset('logo.svg') }}" alt="Logicoforms" class="w-9 h-9 rounded-xl shadow-sm">
+                    <img src="{{ asset(config('forms.brand.logo_url', '/logo.svg')) }}" alt="{{ config('forms.brand.name', 'Forms') }}" class="w-9 h-9 rounded-xl shadow-sm">
                     <div>
                         <h1 class="font-bold text-gray-900 leading-tight text-sm sm:text-base">AI Form Builder</h1>
                         <p class="text-xs text-gray-400 hidden sm:block">Describe your form in plain English</p>

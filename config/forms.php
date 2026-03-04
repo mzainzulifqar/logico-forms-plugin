@@ -23,7 +23,7 @@ return [
     |
     */
     'urls' => [
-        'edit'   => env('FORMS_URL_EDIT', '/forms/{id}/edit'),
+        'edit'   => env('FORMS_URL_EDIT', '/logico/forms/{id}/edit'),
         'public' => env('FORMS_URL_PUBLIC', '/f/{slug}'),
     ],
 
