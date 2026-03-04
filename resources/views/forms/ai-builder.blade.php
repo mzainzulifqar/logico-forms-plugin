@@ -563,7 +563,7 @@ function aiBuilder() {
         },
 
         pollForEvents(jobId, offset) {
-            fetch(`/forms/ai-builder/chat/${jobId}/events?offset=${offset}`, {
+            fetch(`{{ route('forms.ai-builder.poll', ['jobId' => '__JOB__']) }}`.replace('__JOB__', jobId) + `?offset=${offset}`, {
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },

@@ -182,13 +182,13 @@ The package registers both API and web routes automatically.
 |--------|-----|-------------|
 | GET | `/f/{slug}` | Public form view |
 | GET | `/f/{slug}/og-image.png` | OG image |
-| GET | `/dashboard` | Forms dashboard |
-| GET | `/forms/create` | Create form |
-| GET | `/forms/{form}/edit` | Form editor |
-| GET | `/forms/{form}` | Responses viewer |
-| GET | `/forms/{form}/logic-tree` | Logic tree visualizer |
-| GET | `/forms/templates` | Template gallery |
-| GET | `/forms/ai-builder` | AI form builder |
+| GET | `/logico/forms` | Forms list |
+| GET | `/logico/forms/create` | Create form |
+| GET | `/logico/forms/{form}/edit` | Form editor |
+| GET | `/logico/forms/{form}` | Responses viewer |
+| GET | `/logico/forms/{form}/logic-tree` | Logic tree visualizer |
+| GET | `/logico/forms/templates` | Template gallery |
+| GET | `/logico/forms/ai-builder` | AI form builder |
 
 **API routes** (always registered):
 
@@ -259,6 +259,146 @@ The dashboard includes a configurable nav partial. Set `forms.views.nav` in conf
 ```
 
 Set it to `null` to disable the nav entirely.
+
+## Querying Forms & Responses
+
+All package models are available for direct use. Import from `Logicoforms\Forms\Models\*`.
+
+### Get a user's forms
+
+```php
+use Logicoforms\Forms\Models\Form;
+
+$forms = $user->forms;
+
+// Only published
+$published = $user->forms()->where('status', 'published')->get();
+
+// With question and session counts
+$forms = Form::where('created_by', $user->id)
+    ->withCount(['questions', 'sessions'])
+    ->latest()
+    ->get();
+```
+
+### Get form questions with options
+
+```php
+$form = Form::with('questions.options')->find($formId);
+
+foreach ($form->questions as $question) {
+    echo $question->question_text; // "How likely are you to recommend us?"
+    echo $question->type;          // radio, text, rating, etc.
+
+    foreach ($question->options as $option) {
+        echo $option->label; // "Very likely"
+        echo $option->value; // "very_likely"
+    }
+}
+```
+
+### Get completed responses for a form
+
+```php
+use Logicoforms\Forms\Models\FormSession;
+
+$sessions = FormSession::where('form_id', $formId)
+    ->where('is_completed', true)
+    ->with('answers.question')
+    ->latest()
+    ->get();
+
+foreach ($sessions as $session) {
+    echo $session->session_uuid;
+    echo $session->created_at;
+
+    foreach ($session->answers as $answer) {
+        echo $answer->question->question_text;
+        echo $answer->answer_value; // string or array (for checkbox)
+    }
+}
+```
+
+### Get answers for a specific question
+
+```php
+use Logicoforms\Forms\Models\FormAnswer;
+
+$answers = FormAnswer::where('question_id', $questionId)
+    ->whereHas('session', fn ($q) => $q->where('is_completed', true))
+    ->pluck('answer_value');
+```
+
+### Count responses
+
+```php
+$form = Form::withCount([
+    'sessions',
+    'sessions as completed_count' => fn ($q) => $q->where('is_completed', true),
+])->find($formId);
+
+echo $form->sessions_count;  // total started
+echo $form->completed_count; // total completed
+```
+
+### Aggregate answers (averages, breakdowns)
+
+```php
+// Average rating
+$avg = FormAnswer::where('question_id', $ratingQuestionId)
+    ->whereHas('session', fn ($q) => $q->where('is_completed', true))
+    ->get()
+    ->avg(fn ($a) => (float) $a->answer_value);
+
+// Option breakdown for radio/select
+$breakdown = FormAnswer::where('question_id', $radioQuestionId)
+    ->whereHas('session', fn ($q) => $q->where('is_completed', true))
+    ->get()
+    ->countBy(fn ($a) => $a->answer_value);
+// Returns: ['very_likely' => 12, 'not_likely' => 3, ...]
+```
+
+### Filter responses by date
+
+```php
+$sessions = FormSession::where('form_id', $formId)
+    ->where('is_completed', true)
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->with('answers')
+    ->get();
+```
+
+### Export-friendly: all responses as rows
+
+```php
+$form = Form::with('questions')->find($formId);
+$questions = $form->questions;
+
+$rows = FormSession::where('form_id', $formId)
+    ->where('is_completed', true)
+    ->with('answers')
+    ->get()
+    ->map(function ($session) use ($questions) {
+        $row = [
+            'uuid' => $session->session_uuid,
+            'completed_at' => $session->updated_at,
+        ];
+        foreach ($questions as $q) {
+            $answer = $session->answers->firstWhere('question_id', $q->id);
+            $val = $answer?->answer_value;
+            $row[$q->question_text] = is_array($val) ? implode(', ', $val) : $val;
+        }
+        return $row;
+    });
+```
+
+## Testing
+
+```bash
+cd packages/laravel-forms
+composer install
+./vendor/bin/phpunit
+```
 
 ## License
 

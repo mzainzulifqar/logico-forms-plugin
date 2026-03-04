@@ -962,6 +962,7 @@ function formBuilder() {
             }
         },
         formId: {{ $form->id }},
+        formBaseUrl: @json(rtrim(route('forms.show', $form), '/')),
         formTitle: @json($form->title),
         formDescription: @json($form->description),
         formStatus: @json($form->status),
@@ -1097,7 +1098,7 @@ function formBuilder() {
                         .filter(r => r.next_question_id && (r.operator === 'always' || r.value))
                         .map(r => ({ operator: r.operator, value: r.value || '', next_question_id: r.next_question_id })),
                 };
-                const res = await fetch(`/forms/${this.formId}/questions/${q.id}`, {
+                const res = await fetch(`${this.formBaseUrl}/questions/${q.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify(body),
@@ -1134,7 +1135,7 @@ function formBuilder() {
                     end_screen_message: this.endScreen.message || null,
                     end_screen_image_url: this.endScreen.image_url || null,
                 };
-                const res = await fetch(`/forms/${this.formId}`, {
+                const res = await fetch(`${this.formBaseUrl}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify(body),
@@ -1153,7 +1154,7 @@ function formBuilder() {
             try {
                 const body = {};
                 body[field] = value;
-                await fetch(`/forms/${this.formId}`, {
+                await fetch(`${this.formBaseUrl}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify(body),
@@ -1191,7 +1192,7 @@ function formBuilder() {
 
         async addQuestion() {
             try {
-                const res = await fetch(`/forms/${this.formId}/questions`, {
+                const res = await fetch(`${this.formBaseUrl}/questions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify({ type: 'text', question_text: 'New question', is_required: false }),
@@ -1215,7 +1216,7 @@ function formBuilder() {
             if (!confirm('Delete this question?')) return;
             const q = this.questions[this.selectedIdx];
             try {
-                await fetch(`/forms/${this.formId}/questions/${q.id}`, {
+                await fetch(`${this.formBaseUrl}/questions/${q.id}`, {
                     method: 'DELETE',
                     headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                 });

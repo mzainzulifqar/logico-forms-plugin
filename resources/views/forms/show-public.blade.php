@@ -1024,7 +1024,7 @@
                 async startSession() {
                     this.screen = 'loading';
                     try {
-                        const res = await fetch(`/api/forms/${this.formId}/sessions`, {
+                        const res = await fetch(`{{ route('forms.api.sessions.store', ['form' => $formId]) }}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                         });
@@ -1053,7 +1053,7 @@
                     clearTimeout(this.autoAdvanceTimer);
 
                     try {
-                        const res = await fetch(`/api/forms/sessions/${this.sessionUuid}/answers`, {
+                        const res = await fetch(`{{ rtrim(route('forms.api.answers.store', ['uuid' => '__UUID__']), '/') }}`.replace('__UUID__', this.sessionUuid), {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                             body: JSON.stringify({ question_id: this.question.id, answer: this.answerValue }),

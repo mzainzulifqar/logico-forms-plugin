@@ -242,7 +242,7 @@ function dashboard() {
             if (!confirm(`Delete ${this.selected.length} form(s)? This cannot be undone.`)) return;
             const token = document.querySelector('meta[name="csrf-token"]').content;
             for (const id of this.selected) {
-                await fetch(`/forms/${id}`, {
+                await fetch(`{{ rtrim(route('forms.index'), '/') }}/${id}`, {
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': token, 'Accept': 'application/json' }
                 });

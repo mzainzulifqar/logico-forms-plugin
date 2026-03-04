@@ -10,6 +10,6 @@ Route::prefix(config('forms.api_prefix', 'api'))
         'throttle:' . config('forms.api_rate_limit', '60,1'),
     ])
     ->group(function () {
-        Route::post('/forms/{form}/sessions', [FormSessionController::class, 'store']);
-        Route::post('/forms/sessions/{uuid}/answers', [FormAnswerController::class, 'store']);
+        Route::post('/forms/{form}/sessions', [FormSessionController::class, 'store'])->name('forms.api.sessions.store');
+        Route::post('/forms/sessions/{uuid}/answers', [FormAnswerController::class, 'store'])->name('forms.api.answers.store');
     });
