@@ -439,6 +439,41 @@ $rows = FormSession::where('form_id', $formId)
     });
 ```
 
+## Claude Code Skill
+
+The package ships with a [Claude Code](https://claude.com/claude-code) skill that lets you create forms, add logic, review quality, export responses, and debug issues — all from the CLI.
+
+### Setup
+
+Copy the skill into your project's `.claude/skills/` directory:
+
+```bash
+mkdir -p .claude/skills/forms
+cp vendor/logicoforms/laravel-forms/.claude/skills/forms/SKILL.md .claude/skills/forms/SKILL.md
+```
+
+Or if you're using a path repository (development):
+
+```bash
+mkdir -p .claude/skills/forms
+cp ../packages/laravel-forms/.claude/skills/forms/SKILL.md .claude/skills/forms/SKILL.md
+```
+
+### Usage
+
+Once installed, use `/forms` followed by what you want to do:
+
+```
+/forms create a customer feedback survey with NPS branching
+/forms review form 3 for logic issues
+/forms add branching to form 5 based on the role question
+/forms export responses for form 3 as CSV
+/forms debug why form 3 never completes
+/forms show me the routes this package registers
+```
+
+The skill knows the full package API — models, logic engine, routes, events, config, and common debugging patterns.
+
 ## Testing
 
 ```bash
