@@ -75,8 +75,10 @@ class CreateForm implements Tool
         if ($wiringIssues !== []) {
             app(ToolStatusReporter::class)->report('Checking the logic…');
 
+            // Issues first — formatError only shows the first 5, and cosmetic
+            // normalization notes would otherwise crowd out the actual failure.
             return $this->formatError(
-                array_merge($normNotes, $wiringIssues),
+                array_merge($wiringIssues, $normNotes),
                 'Fix and call CreateForm again. Tip: leave one option as default path (no rule), don\'t cover every option with equals.'
             );
         }
@@ -572,20 +574,11 @@ class CreateForm implements Tool
             }
         }
 
-        // 4) Last resort: drop all logic rules. This guarantees a valid linear flow.
-        $droppedCount = 0;
-        foreach ($questions as &$qData) {
-            if (! empty($qData['logic'])) {
-                $droppedCount += is_array($qData['logic']) ? count($qData['logic']) : 1;
-            }
-            $qData['logic'] = [];
-        }
-        unset($qData);
-
-        if ($droppedCount > 0) {
-            $notes[] = "Dropped {$droppedCount} logic rule(s) as a fallback to ensure a valid form flow. You can re-add branching in the editor.";
-        }
-
+        // 4) Repair failed. Leave the rules intact and let Phase 3 (validateWiring)
+        // report the specific reachability failure back to the model, which can fix
+        // the one bad jump. Previously this dropped ALL logic rules to guarantee a
+        // linear flow — that silently turned a branched form into a linear one and
+        // still reported it as branched to the user.
         return [$questions, $notes];
     }
 
@@ -970,8 +963,10 @@ class CreateForm implements Tool
             }
         }
 
-        if ($realBranchPoints === 0 && $otherSpecifyCount > 0) {
-            $issues[] = "BRANCHING_TOO_SHALLOW: The form has {$otherSpecifyCount} \"Other → please specify\" jump(s) but ZERO real branch points. \"Other → specify\" is a text clarification, not a branch. A real branch routes different substantive answers (e.g. \"Website\" vs \"Branding\" vs \"Consulting\") to DIFFERENT multi-question paths (2-3 unique follow-ups each). Redesign: pick a key segmentation question and give each answer its own dedicated follow-up path.";
+        if ($realBranchPoints === 0) {
+            $issues[] = $otherSpecifyCount > 0
+                ? "BRANCHING_TOO_SHALLOW: The form has {$otherSpecifyCount} \"Other → please specify\" jump(s) but ZERO real branch points. \"Other → specify\" is a text clarification, not a branch. A real branch routes different substantive answers (e.g. \"Website\" vs \"Branding\" vs \"Consulting\") to DIFFERENT multi-question paths (2-3 unique follow-ups each). Redesign: pick a key segmentation question and give each answer its own dedicated follow-up path."
+                : "BRANCHING_MISSING: This {$questionCount}-question form has ZERO branching logic — every respondent answers an identical linear list. Pick a key segmentation question (a radio/select whose answer changes what you need to ask next), route each substantive option to its own dedicated 2-3 question follow-up path, then close each path with an `always` rule jumping to a shared ending section.";
         }
 
         // === 2. Detect arbitrary single-value conditions ===

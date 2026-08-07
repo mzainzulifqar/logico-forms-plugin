@@ -88,7 +88,9 @@ class ProcessAiFormChat extends Command
                 $agent->forUser($user);
             }
 
-            $response = $agent->prompt($message, timeout: 120);
+            // No explicit timeout — Promptable::getTimeout() falls through to
+            // FormBuilderAgent::timeout(), so forms.ai_builder.timeout applies.
+            $response = $agent->prompt($message);
 
             $text = trim($response->text ?? '');
             $conversationIdOut = $response->conversationId;
